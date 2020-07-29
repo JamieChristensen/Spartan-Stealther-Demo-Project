@@ -49,7 +49,7 @@ public class Spear : MonoBehaviour
             EnemyController controller = other.transform.GetComponent<EnemyController>();
 
             controller.navMeshAgent.enabled = false;
-            controller.enabled = false;
+            controller.isDead = true;
 
             if (hitEnemy == false) //Ensures spear only impales one enemy for now.
             {

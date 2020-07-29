@@ -12,8 +12,9 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        Instantiate(particleExplosionPrefab, transform.position, Quaternion.identity);
+        Transform particleTransform = Instantiate(particleExplosionPrefab, transform.position, Quaternion.identity).GetComponent<Transform>();
+        particleTransform.LookAt(other.transform);
         Destroy(gameObject);
-        
+
     }
 }

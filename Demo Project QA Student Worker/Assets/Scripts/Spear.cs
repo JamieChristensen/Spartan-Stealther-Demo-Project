@@ -74,7 +74,4 @@ public class Spear : MonoBehaviour
             transform.parent = other.transform;
         }
     }
-
-    //Stops motion when impaling impaledenemies or walls.
-
 }

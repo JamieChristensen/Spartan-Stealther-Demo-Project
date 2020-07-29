@@ -80,6 +80,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 2027192335750508517}
+  dropOffDistance: 35
 --- !u!54 &2027192335750508517
 Rigidbody:
   m_ObjectHideFlags: 0

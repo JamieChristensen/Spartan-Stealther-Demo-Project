@@ -31,7 +31,7 @@ public class PlayerController : MonoBehaviour
     private GameObject spearInHand;
     private float reloadTimer;
     [SerializeField]
-    private float reloadTime = 3f;
+    private float reloadTime; 
     private bool readyToShoot;
 
 
@@ -111,6 +111,7 @@ public class PlayerController : MonoBehaviour
         spearInHand.SetActive(false);
         GameObject spearObj = Instantiate(spearPrefab, spearInHand.transform.position, spearInHand.transform.rotation);
         Spear spear = spearObj.GetComponentInChildren<Spear>();
-        spear.rb.AddForce((target - spearInHand.transform.position).normalized * spearSpeed, ForceMode.VelocityChange);
+        Vector3 upModifier = new Vector3(0, 0.15f, 0);   //Ensures that the target - if an enemy, will likely be lifted by and fly with the spear.
+        spear.rb.AddForce((target+upModifier - spearInHand.transform.position).normalized * spearSpeed, ForceMode.VelocityChange);
     }
 }

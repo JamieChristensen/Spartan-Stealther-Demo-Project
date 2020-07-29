@@ -6,19 +6,30 @@ public class Spear : MonoBehaviour
 {
     public Rigidbody rb;
 
-    private Vector3 previousPosition; //Used to prevent awkward movement post-collision when lodging into walls.
+    private Vector3 previousPosition;
     private Quaternion previousRotation;
     private bool hitEnemy;
+
+    [SerializeField]
+    private float dropOffDistance = 50f;
+    private float distanceTravelled;
+
+
     // Start is called before the first frame update
     void Start()
     {
-
+        previousPosition = transform.position;
+        previousRotation = transform.rotation;
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        distanceTravelled += Vector3.Distance(transform.position, previousPosition);
+        if (distanceTravelled > dropOffDistance && !rb.useGravity)
+        {
+            rb.useGravity = true;
+        }
     }
 
     void LateUpdate()
@@ -42,17 +53,18 @@ public class Spear : MonoBehaviour
             //Debug.Log("Hit a wall");
 
             this.enabled = false;
+            GetComponent<Collider>().enabled = false;
         }
 
         if (other.transform.CompareTag("Enemy"))
         {
-            EnemyController controller = other.transform.GetComponent<EnemyController>();
-
-            controller.navMeshAgent.enabled = false;
-            controller.isDead = true;
-
             if (hitEnemy == false) //Ensures spear only impales one enemy for now.
             {
+                EnemyController controller = other.transform.GetComponent<EnemyController>();
+
+                controller.isDead = true;
+                controller.navMeshAgent.isStopped = true;
+
                 other.transform.parent = transform;
                 other.transform.parent.tag = "DeadEnemy";
                 hitEnemy = true;

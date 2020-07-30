@@ -153,7 +153,7 @@ public class PlayerController : MonoBehaviour
             transform.LookAt(lookPos);
             transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z); //Prevents looking down.
 
-            if (isRedirectingSpear)
+            if (isRedirectingSpear && mostRecentlyThrownSpear != null)
             {
                 Transform spearTransform = mostRecentlyThrownSpear.telegraphingSpear.transform;
 

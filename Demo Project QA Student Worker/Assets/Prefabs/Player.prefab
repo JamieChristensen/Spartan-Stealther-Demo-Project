@@ -1550,7 +1550,7 @@ MonoBehaviour:
   redirectSpearKey: 324
   spearCollisionLayers:
     serializedVersion: 2
-    m_Bits: 3328
+    m_Bits: 11520
   moveSpeed: 12
   controllerGravity: 0
   spearSpeed: 60
@@ -1559,6 +1559,7 @@ MonoBehaviour:
   spearInHand: {fileID: 5254551859667193549}
   reloadTime: 0.8
   mostRecentlyThrownSpear: {fileID: 0}
+  mousePos: {x: 0, y: 0, z: 0}
 --- !u!143 &5254551860311386072
 CharacterController:
   m_ObjectHideFlags: 0

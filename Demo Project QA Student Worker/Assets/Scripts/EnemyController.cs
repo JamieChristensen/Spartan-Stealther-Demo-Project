@@ -81,6 +81,7 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private PhysicMaterial physMaterialOnDeath;
 
+    private List<Collider> ragdollParts = new List<Collider>();
 
     void OnDrawGizmosSelected()
     {
@@ -123,12 +124,16 @@ public class EnemyController : MonoBehaviour
         else
         {
             state = EnemyState.Patrolling;
-        }
+        }   
+
+        SetRagdollParts();
     }
 
     // Start is called before the first frame update
     void Start()
     {
+
+
         if (state == EnemyState.Patrolling)
         {
             currentPatrolPointIndex = 0;
@@ -313,7 +318,7 @@ public class EnemyController : MonoBehaviour
         }
         else
         {
-            if (currentIndex >= patrolPoints.Length-1)
+            if (currentIndex >= patrolPoints.Length - 1)
             {
                 pathDirectionIsForward = false;
                 return currentIndex - 1;
@@ -326,6 +331,34 @@ public class EnemyController : MonoBehaviour
 
             int pathDir = pathDirectionIsForward ? 1 : -1;
             return currentIndex + pathDir;
+        }
+    }
+
+
+    public void TurnOnRagdoll()
+    {
+        GetComponent<Collider>().enabled = false;
+        //TODO: Turn off animator.
+
+
+        foreach (Collider coll in ragdollParts)
+        {
+            coll.isTrigger = false;
+        }
+    }
+
+    private void SetRagdollParts()
+    {
+        Collider[] colliders = GetComponentsInChildren<Collider>();
+
+
+        foreach (Collider coll in colliders)
+        {
+            if (coll.gameObject != this.gameObject)
+            {
+                coll.isTrigger = true;
+                ragdollParts.Add(coll);
+            }
         }
     }
 }

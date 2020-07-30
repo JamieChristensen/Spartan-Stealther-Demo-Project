@@ -22,8 +22,8 @@ TagManager:
   - Wall
   - Enemy
   - Player
-  - 
-  - 
+  - DeadEnemy
+  - ImpaledEnemy
   - 
   - 
   - 

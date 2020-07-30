@@ -86,7 +86,7 @@ PrefabInstance:
     - target: {fileID: 6296344785592023939, guid: 7351430bdf87c81499f4a142b8cee0fd,
         type: 3}
       propertyPath: simulationSpeed
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6296344785592023939, guid: 7351430bdf87c81499f4a142b8cee0fd,
         type: 3}
@@ -238,6 +238,11 @@ PrefabInstance:
       propertyPath: ShapeModule.radiusThickness
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6296344785592023939, guid: 7351430bdf87c81499f4a142b8cee0fd,
+        type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6743551341999188296, guid: 7351430bdf87c81499f4a142b8cee0fd,
         type: 3}
       propertyPath: EmissionModule.m_Bursts.Array.size
@@ -256,7 +261,7 @@ PrefabInstance:
     - target: {fileID: 6743551341999188296, guid: 7351430bdf87c81499f4a142b8cee0fd,
         type: 3}
       propertyPath: simulationSpeed
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6743551341999188296, guid: 7351430bdf87c81499f4a142b8cee0fd,
         type: 3}
@@ -417,6 +422,11 @@ PrefabInstance:
         type: 3}
       propertyPath: ShapeModule.radiusThickness
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6743551341999188296, guid: 7351430bdf87c81499f4a142b8cee0fd,
+        type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 9130007200333107258, guid: 7351430bdf87c81499f4a142b8cee0fd,
         type: 3}

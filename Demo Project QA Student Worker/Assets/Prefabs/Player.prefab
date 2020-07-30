@@ -1482,7 +1482,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5254551859667193549}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.56999993, y: 0.060622998, z: -0.3331797}
+  m_LocalPosition: {x: 0.56999993, y: -0, z: -0.3331797}
   m_LocalScale: {x: 3, y: 3, z: 3}
   m_Children:
   - {fileID: 5254551859666884129}
@@ -1552,6 +1552,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 3328
   moveSpeed: 12
+  controllerGravity: 0
   spearSpeed: 60
   spearPrefab: {fileID: 7176320511624690139, guid: 33f4a2c89401c2947839278fa1d87ba3,
     type: 3}
@@ -1570,7 +1571,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 2
   m_Height: 2
-  m_Radius: 0.5
+  m_Radius: 0.7
   m_SlopeLimit: 45
   m_StepOffset: 0.1
   m_SkinWidth: 0.08

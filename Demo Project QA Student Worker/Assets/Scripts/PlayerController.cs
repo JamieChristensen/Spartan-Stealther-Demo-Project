@@ -1,15 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
     private CharacterController controller;     //Assign in inspector
-    [SerializeField]
-    private Rigidbody rb;   //Assign in inspector
+    
+    public Rigidbody rb;   //Assign in inspector
 
     [SerializeField]
     private Camera cam;     //Assign in inspector
@@ -26,6 +26,9 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     private float moveSpeed;
+    [Range(0, 20)]
+    [SerializeField]
+    private float controllerGravity;
 
     private float rayMaxDist = 500f;
 
@@ -45,6 +48,10 @@ public class PlayerController : MonoBehaviour
     [HideInInspector]
     public Spear mostRecentlyThrownSpear; //Names are hard. - public so spear can un-recent itself when colliding with walls/enemies.
     private bool isRedirectingSpear;
+    private bool doRedirectSpear;
+
+    public Vector3 mousePos; //Used by camera
+
     private void Awake()
     {
 
@@ -69,7 +76,7 @@ public class PlayerController : MonoBehaviour
             if (Physics.Raycast(ray, out hit, rayMaxDist, spearCollisionLayers))
             {
                 Vector3 target;
-                if (hit.collider.CompareTag("Enemy"))
+                if (hit.collider.CompareTag("Enemy") || hit.collider.CompareTag("DeadEnemy"))
                 {
                     target = hit.collider.transform.position;
                 }
@@ -84,40 +91,38 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (bulletTimeOn)
-        {
-            Time.timeScale = 0.5f;          //Half speed.
-            Time.fixedDeltaTime = 0.01f;    //0.02f default, halved interval to proportionalize FixedUpdate calls. 
-        }
-        else
-        {
-            Time.timeScale = 1f;
-            Time.fixedDeltaTime = 0.02f;
-        }
-
-
-        if (pressedRedirectSpear)
+        if (pressedRedirectSpear || isRedirectingSpear)
         {
             isRedirectingSpear = true;
+            bulletTimeOn = true;
             if (mostRecentlyThrownSpear != null)
             {
                 mostRecentlyThrownSpear.telegraphingSpear.SetActive(true);
-
             }
             else
             {
                 isRedirectingSpear = false;
             }
         }
-    
 
         if (isRedirectingSpear)
         {
             if (Input.GetKeyUp(redirectSpearKey))
             {
-                mostRecentlyThrownSpear.rb.velocity = Vector3.zero;
-                //Calculate new velocity.
+                //Calculate new velocity in fixedUpdate:
+                doRedirectSpear = true;
             }
+        }
+
+        if (bulletTimeOn)
+        {
+            Time.timeScale = 0.33f;          //Half speed.
+            Time.fixedDeltaTime = 0.02f * 0.33f;    //0.02f default, halved interval to proportionalize FixedUpdate calls. 
+        }
+        else
+        {
+            Time.timeScale = 1f;
+            Time.fixedDeltaTime = 0.02f;
         }
 
         //Timers:
@@ -136,25 +141,41 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 direction = new Vector3(horizontalInput, 0, verticalInput).normalized;
         controller.Move(direction * moveSpeed * Time.fixedDeltaTime);
+        controller.Move(Vector3.down * controllerGravity * Time.fixedDeltaTime);
 
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit, rayMaxDist, spearCollisionLayers))
         {
-            Debug.DrawLine(ray.origin, hit.point, Color.white);
-            Vector3 lookPos = hit.point + new Vector3(0, 0, 0);
+            //Debug.DrawLine(ray.origin, hit.point, Color.white);
+            Vector3 lookPos = hit.point;
+            mousePos = lookPos;
             transform.LookAt(lookPos);
             transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z); //Prevents looking down.
-            Debug.DrawLine(hit.point, lookPos, Color.black);
 
             if (isRedirectingSpear)
             {
                 Transform spearTransform = mostRecentlyThrownSpear.telegraphingSpear.transform;
-                
+
                 spearTransform.LookAt(lookPos);
                 spearTransform.rotation = Quaternion.Euler(0, spearTransform.rotation.eulerAngles.y, spearTransform.rotation.eulerAngles.z);
             }
+            if (doRedirectSpear)
+            {
+                Transform spearTransform = mostRecentlyThrownSpear.transform;
+                mostRecentlyThrownSpear.rb.velocity = Vector3.zero;
+                spearTransform.rotation = mostRecentlyThrownSpear.telegraphingSpear.transform.rotation;
+                spearTransform.Rotate(new Vector3(90, 0, 0), Space.Self); //Spears are rotated proportionally to eachother..
+
+                Vector3 target = new Vector3(hit.point.x, spearInHand.transform.position.y, hit.point.z);
+                mostRecentlyThrownSpear.rb.AddForce((target - spearTransform.position).normalized * spearSpeed, ForceMode.VelocityChange);
+                doRedirectSpear = false;
+                isRedirectingSpear = false;
+                mostRecentlyThrownSpear.telegraphingSpear.SetActive(false);
+            }
         }
+
+
     }
 
 
@@ -181,7 +202,15 @@ public class PlayerController : MonoBehaviour
             rb = GetComponent<Rigidbody>();
         }
         rb.constraints = RigidbodyConstraints.None;
+        rb.useGravity = true;
 
+        StartCoroutine(OnDeath());
         this.enabled = false;
+    }
+
+    public IEnumerator OnDeath()
+    {
+        yield return new WaitForSeconds(2f);
+        SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
     }
 }

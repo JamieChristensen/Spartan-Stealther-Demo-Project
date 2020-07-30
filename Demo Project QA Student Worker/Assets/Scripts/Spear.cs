@@ -18,17 +18,25 @@ public class Spear : MonoBehaviour
 
     public GameObject telegraphingSpear;
 
+    private Vector3 previousVelocity;
+
     // Start is called before the first frame update
     void Start()
     {
         previousPosition = transform.position;
         previousRotation = transform.rotation;
+
     }
 
     // Update is called once per frame
     void Update()
     {
         distanceTravelled += Vector3.Distance(transform.position, previousPosition);
+
+        if (rb == null)
+        {
+            return;
+        }
         if (distanceTravelled > dropOffDistance && !rb.useGravity)
         {
             rb.useGravity = true;
@@ -39,11 +47,15 @@ public class Spear : MonoBehaviour
     {
         previousPosition = transform.position;
         previousRotation = transform.rotation;
+        if (rb != null)
+        {
+            previousVelocity = rb.velocity;
+        }
     }
 
     private void OnCollisionEnter(Collision other)
     {
-        telegraphingSpear.SetActive(false); 
+        telegraphingSpear.SetActive(false);
 
         if (other.transform.CompareTag("Wall"))
         {
@@ -70,12 +82,15 @@ public class Spear : MonoBehaviour
                 EnemyController controller = other.transform.GetComponent<EnemyController>();
 
                 controller.isDead = true;
-                controller.navMeshAgent.isStopped = true;
-
+                if (controller.navMeshAgent.enabled)
+                {
+                    controller.navMeshAgent.isStopped = true;
+                }
                 other.transform.parent = transform;
                 other.transform.parent.tag = "DeadEnemy";
                 hitEnemy = true;
-                rb.useGravity = true;
+                //rb.useGravity = true;
+                rb.velocity = previousVelocity;
             }
 
             if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
@@ -89,8 +104,9 @@ public class Spear : MonoBehaviour
             hitEnemy = true;
 
             rb.velocity = Vector3.zero;
-            rb.isKinematic = true;
-            rb.constraints = RigidbodyConstraints.FreezeAll;
+            rb.angularVelocity = Vector3.zero;
+            Destroy(rb);
+            
             transform.position = previousPosition;
             transform.rotation = previousRotation;
 

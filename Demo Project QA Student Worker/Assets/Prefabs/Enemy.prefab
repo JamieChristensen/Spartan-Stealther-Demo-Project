@@ -52,6 +52,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navMeshAgent: {fileID: 1932664629118018422}
   playerTransform: {fileID: 0}
+  isPathClosed: 0
   patrolPoints:
   - {x: -3, y: 0, z: 14}
   - {x: 8.76, y: 0, z: 13.08}
@@ -59,22 +60,26 @@ MonoBehaviour:
   - {x: 15.68, y: 0, z: 5.78}
   isDead: 0
   deathFadeFOVTime: 0.5
-  deathFadeShaderTime: 1
+  deathFadeShaderTime: 0
   fieldOfView: {fileID: 2187661040673429585}
   viewMeshRenderer: {fileID: 1563246516938995849}
-  deathFOVColor: {r: 0.7924528, g: 0.0710217, b: 0.0710217, a: 0.6156863}
+  deathFOVColor: {r: 0.20754719, g: 0, b: 0, a: 0.6156863}
+  detectedPlayerFOVColor: {r: 0.7921569, g: 0.07058824, b: 0.07058824, a: 0.6117647}
+  seekingFOVColor: {r: 1, g: 0.7263849, b: 0, a: 0.6156863}
   viewRange: 20
   desiredFightingDistance: 14
   projectileSpeed: 25
   bulletPrefab: {fileID: 5297487721701998543, guid: 49496801d3b7fb64499d0bf0abd5ca8e,
     type: 3}
   bulletSpawn: {fileID: 8277627816698653179}
-  reloadTime: 0.5
+  reloadTime: 0.3
   turnSmoothTime: 0.05
   baseMoveSpeed: 6
   fightingMoveSpeed: 8
   baseTurnSpeed: 230
   fightingTurnSpeed: 270
+  physMaterialOnDeath: {fileID: 13400000, guid: 0b26f9bc1cea8864eb597175be8c7dd8,
+    type: 2}
 --- !u!114 &2187661040673429585
 MonoBehaviour:
   m_ObjectHideFlags: 0

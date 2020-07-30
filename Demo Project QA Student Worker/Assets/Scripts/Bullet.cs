@@ -13,8 +13,16 @@ public class Bullet : MonoBehaviour
     private void OnCollisionEnter(Collision other)
     {
         Transform particleTransform = Instantiate(particleExplosionPrefab, transform.position, Quaternion.identity).GetComponent<Transform>();
-        particleTransform.LookAt(other.transform);
-        Destroy(gameObject);
+        particleTransform.rotation = transform.rotation;
 
+
+        if (other.transform.CompareTag("Player"))
+        {
+            PlayerController pc = other.transform.GetComponent<PlayerController>();
+            pc.Die();
+        }
+        
+        Destroy(particleTransform.gameObject, 5f); //Let particles fully dissolve before removing the obj.
+        Destroy(gameObject);
     }
 }

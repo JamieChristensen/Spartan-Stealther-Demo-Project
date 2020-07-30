@@ -14,6 +14,9 @@ public class Spear : MonoBehaviour
     private float dropOffDistance = 50f;
     private float distanceTravelled;
 
+    public PlayerController playerController;
+
+    public GameObject telegraphingSpear;
 
     // Start is called before the first frame update
     void Start()
@@ -40,9 +43,8 @@ public class Spear : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        //cases:
-        //Wall
-        //Enemy
+        telegraphingSpear.SetActive(false); 
+
         if (other.transform.CompareTag("Wall"))
         {
             rb.velocity = Vector3.zero;
@@ -54,6 +56,11 @@ public class Spear : MonoBehaviour
 
             this.enabled = false;
             GetComponent<Collider>().enabled = false;
+
+            if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
+            {
+                playerController.mostRecentlyThrownSpear = null;
+            }
         }
 
         if (other.transform.CompareTag("Enemy"))
@@ -71,6 +78,10 @@ public class Spear : MonoBehaviour
                 rb.useGravity = true;
             }
 
+            if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
+            {
+                playerController.mostRecentlyThrownSpear = null;
+            }
         }
 
         if (other.transform.CompareTag("DeadEnemy"))
@@ -84,6 +95,13 @@ public class Spear : MonoBehaviour
             transform.rotation = previousRotation;
 
             transform.parent = other.transform;
+
+            if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
+            {
+                playerController.mostRecentlyThrownSpear = null;
+            }
         }
+
+
     }
 }

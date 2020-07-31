@@ -12,11 +12,14 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private float smoothVel;
 
-    //smoothvel;s
+    [Range(1, 10)]
+    [Tooltip("How much is the mouse-direction vector scaled?")]
+    [SerializeField]
+    private float mouseFactor;
 
     private void Start()
     {
-        Time.fixedDeltaTime = 0.01f; // Double.
+        Time.fixedDeltaTime = 0.02f * 0.33f;
         if (player == null)
         {
             player = FindObjectOfType<PlayerController>();
@@ -26,7 +29,8 @@ public class CameraController : MonoBehaviour
     {
         Vector3 directionToMouse = (player.mousePos - player.transform.position);
         directionToMouse = new Vector3(directionToMouse.x, 0, directionToMouse.z).normalized;
-        Vector3 dirOffset = offset + (directionToMouse * 2f);
+        float lookFactor = Mathf.Min(Vector3.Distance(directionToMouse, player.transform.position), mouseFactor);
+        Vector3 dirOffset = offset + (directionToMouse * lookFactor);
         Vector3 target = dirOffset + player.transform.position;
 
         transform.position = Vector3.SmoothDamp(transform.position, target, ref currentVel, smoothVel, 20f, Time.deltaTime);

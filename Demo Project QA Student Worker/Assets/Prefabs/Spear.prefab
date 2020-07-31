@@ -69,7 +69,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 165171743817479286}
   serializedVersion: 2
-  m_Mass: 30
+  m_Mass: 50
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 0
@@ -396,7 +396,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3072099729518255320}
   serializedVersion: 2
-  m_Mass: 30
+  m_Mass: 50
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 0
@@ -552,7 +552,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6073186458952561794}
   serializedVersion: 2
-  m_Mass: 30
+  m_Mass: 50
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 0
@@ -585,7 +585,7 @@ Transform:
   m_GameObject: {fileID: 7176320511624690139}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 2.53, y: 2.13888, z: -2.44}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_Children:
   - {fileID: 7176320511624558971}
   m_Father: {fileID: 0}
@@ -644,7 +644,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rb: {fileID: 2027192335750508517}
-  dropOffDistance: 35
+  dropOffDistance: 999999
   playerController: {fileID: 0}
   telegraphingSpear: {fileID: 8949402019549028740}
   subSpears:
@@ -663,7 +663,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7176320511624746017}
   serializedVersion: 2
-  m_Mass: 30
+  m_Mass: 50
   m_Drag: 0
   m_AngularDrag: 0.05
   m_UseGravity: 0
@@ -1151,12 +1151,27 @@ PrefabInstance:
     - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
         type: 3}
       propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
-      value: 0.45949703
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
         type: 3}
       propertyPath: m_Time
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].outSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].outWeight
+      value: 0.35
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e9cbfa591b48e54e85207e666fd5787, type: 3}
@@ -1236,12 +1251,27 @@ PrefabInstance:
     - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
         type: 3}
       propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
-      value: 0.45949703
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
         type: 3}
       propertyPath: m_Time
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].inSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].outSlope
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].outWeight
+      value: 0.35
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e9cbfa591b48e54e85207e666fd5787, type: 3}

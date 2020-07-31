@@ -80,7 +80,7 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.34131813
+        value: 1
         inSlope: -0.3143238
         outSlope: -0.3143238
         tangentMode: 0
@@ -165,7 +165,7 @@ Transform:
   m_GameObject: {fileID: 5297487721701998543}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -5.269, y: 0.84068555, z: 19.711}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
   m_Children:
   - {fileID: 3217882932459791735}
   m_Father: {fileID: 0}
@@ -294,7 +294,7 @@ TrailRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.34131813
+        value: 1
         inSlope: -0.3143238
         outSlope: -0.3143238
         tangentMode: 0
@@ -412,7 +412,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 688df96c6b0e0e343b5c5d963bb64b44, type: 2}
+  - {fileID: 2100000, guid: a7974a51324dc174a90a08bf7998d095, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -530,6 +530,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Linerenderer
+      objectReference: {fileID: 0}
+    - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
+        type: 3}
+      propertyPath: m_Parameters.colorGradient.key0.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7990826555923142269, guid: 4e9cbfa591b48e54e85207e666fd5787,
+        type: 3}
+      propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4e9cbfa591b48e54e85207e666fd5787, type: 3}

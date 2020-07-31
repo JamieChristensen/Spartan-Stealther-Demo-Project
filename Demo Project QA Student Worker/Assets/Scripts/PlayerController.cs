@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     private KeyCode bulletTimeKey, redirectSpearKey;
 
     [Header("Other")]
+    [Tooltip("The layers that spear-targetting is impacted by, best as ground only, or ground+enemies")]
     [SerializeField]
     private LayerMask spearCollisionLayers;
 
@@ -117,12 +118,11 @@ public class PlayerController : MonoBehaviour
         if (bulletTimeOn)
         {
             Time.timeScale = 0.33f;          //Half speed.
-            Time.fixedDeltaTime = 0.02f * 0.33f;    //0.02f default, halved interval to proportionalize FixedUpdate calls. 
+            //FixedDeltaTime is changed to 0.02*0.33 in cameracontroller for lack of better place. No adjustment needed to suit timeScale w.r.t bullettime.
         }
         else
         {
-            Time.timeScale = 1f;
-            Time.fixedDeltaTime = 0.02f;
+            Time.timeScale = 1f;   
         }
 
         //Timers:
@@ -184,7 +184,9 @@ public class PlayerController : MonoBehaviour
         spearInHand.SetActive(false);
         GameObject spearObj = Instantiate(spearPrefab, spearInHand.transform.position, spearInHand.transform.rotation);
         Spear spear = spearObj.GetComponentInChildren<Spear>();
-        Vector3 upModifier = new Vector3(0, 0.15f, 0);   //Ensures that the target - if an enemy, will likely be lifted by and fly with the spear.
+        target = new Vector3(target.x, spearInHand.transform.position.y, target.z);
+        Vector3 upModifier = new Vector3(0,0.15f, 0); //Just to give some upwards lift on collisions.
+
         spear.rb.AddForce((target + upModifier - spearInHand.transform.position).normalized * spearSpeed, ForceMode.VelocityChange);
 
         mostRecentlyThrownSpear = spear;

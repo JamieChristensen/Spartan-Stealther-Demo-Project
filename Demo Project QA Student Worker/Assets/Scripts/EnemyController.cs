@@ -81,7 +81,21 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private PhysicMaterial physMaterialOnDeath;
 
+    [Tooltip("Distance at which the enemy stops running towards last known player position")]
+    [SerializeField]
+    private float stopChaseDistance;
+
+    [Header("Ragdoll and animations")]
+    [SerializeField]
     private List<Collider> ragdollParts = new List<Collider>();
+
+    [SerializeField]
+    private Animator animator; //model animator.
+
+    [SerializeField]
+    private EnemyBubble enemyBubble;
+    [SerializeField]
+    private float bubbleDuration = 1f;
 
     void OnDrawGizmosSelected()
     {
@@ -100,8 +114,7 @@ public class EnemyController : MonoBehaviour
                 Gizmos.DrawSphere(patrolPoints[i], 0.5f);
             }
         }
-
-        Gizmos.DrawCube(targetPosition, new Vector3(0.8f, 0.8f, 0.8f));
+        Gizmos.DrawCube(targetPosition, new Vector3(0.8f, 0.8f, 0.8f)); 
     }
 
     void Awake()
@@ -125,21 +138,18 @@ public class EnemyController : MonoBehaviour
         {
             state = EnemyState.Patrolling;
         }
-
-        SetRagdollParts();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-
+        SetRagdollParts();
 
         if (state == EnemyState.Patrolling)
         {
             currentPatrolPointIndex = 0;
             navMeshAgent.SetDestination(patrolPoints[currentPatrolPointIndex]);
         }
-
         fieldOfView.viewRadius = viewRange;
     }
 
@@ -161,18 +171,13 @@ public class EnemyController : MonoBehaviour
         {
             case EnemyState.Idle:
                 //Just doing nothing.
+                Debug.Log("Enemy entered idle: check that it has enough path-points.");
                 break;
-
-            case EnemyState.Dead:
-                //Just doing nothing.
-                break;
-
             case EnemyState.Patrolling:
                 if (viewMeshRenderer.material.color != baseFOVColor)
                 {
                     viewMeshRenderer.material.SetColor("_Color", baseFOVColor);
                 }
-
                 navMeshAgent.speed = baseMoveSpeed;
                 navMeshAgent.angularSpeed = baseTurnSpeed;
 
@@ -185,6 +190,7 @@ public class EnemyController : MonoBehaviour
                 if (IsTransformInFOV(playerTransform, fieldOfView))
                 {
                     state = EnemyState.FightingPlayer;
+                    enemyBubble.ActivateBubble(EnemyState.FightingPlayer, bubbleDuration);
                     reloadTimer = 0; //So the enemy doesn't shoot immediately when seeing the player.
                     lastKnownPlayerPosition = playerTransform.position;
                 }
@@ -196,20 +202,27 @@ public class EnemyController : MonoBehaviour
                 {
                     viewMeshRenderer.material.SetColor("_Color", seekingFOVColor);
                 }
-
                 navMeshAgent.SetDestination(lastKnownPlayerPosition);
+                float distance = Vector3.Distance(transform.position, lastKnownPlayerPosition);
+                Debug.Log("Distance to player is: " + distance);
 
-                if (navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance)
+                if (distance <= stopChaseDistance) //Navmeshdistance had issues updating fast enough.
                 {
-                    state = EnemyState.Patrolling;
-                }
+                    Debug.Log("Changed state to partrolling as distance is: " + navMeshAgent.remainingDistance +
+                    "\n New navmesh destination: " + navMeshAgent.destination +
+                    "\n Last known player position: " + lastKnownPlayerPosition +
+                    "\n my position: " + transform.position);
 
+                    state = EnemyState.Patrolling;
+                    enemyBubble.ActivateBubble(EnemyState.Patrolling, bubbleDuration);
+
+                }
 
                 if (IsTransformInFOV(playerTransform, fieldOfView))
                 {
                     state = EnemyState.FightingPlayer;
+                    enemyBubble.ActivateBubble(EnemyState.FightingPlayer, bubbleDuration);
                     reloadTimer = 0; //So the enemy doesn't shoot immediately when seeing the player. 
-                    lastKnownPlayerPosition = playerTransform.position;
                 }
 
                 break;
@@ -219,6 +232,7 @@ public class EnemyController : MonoBehaviour
                 {
                     viewMeshRenderer.material.SetColor("_Color", detectedPlayerFOVColor);
                 }
+                lastKnownPlayerPosition = playerTransform.position;
 
                 //The following modifies movement and lookdirection for combat - the enemies try to get to a fighting distance on the player, while shooting at the player whenever their gun is loaded. 
                 navMeshAgent.speed = fightingMoveSpeed;
@@ -227,14 +241,13 @@ public class EnemyController : MonoBehaviour
                 if (!IsTransformInFOV(playerTransform, fieldOfView))
                 {
                     state = EnemyState.Seeking;
+                    enemyBubble.ActivateBubble(EnemyState.Seeking, bubbleDuration);
                 }
                 else
                 {
-                    //For looking at player:
-                    lastKnownPlayerPosition = playerTransform.position;
                     if (Vector3.Distance(playerTransform.position, transform.position) < desiredFightingDistance)
                     {
-                        targetPosition = transform.position; //Could add: Raycast behind self to figure out if strafing or backing up is desirable
+                        targetPosition = transform.position;
                         Vector3 dirToPlayer = (playerTransform.position - transform.position).normalized;
                         float targetAngle = Mathf.Atan2(dirToPlayer.x, dirToPlayer.z) * Mathf.Rad2Deg;
                         float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnsSmoothVelocity, turnSmoothTime);
@@ -244,7 +257,7 @@ public class EnemyController : MonoBehaviour
                     {
                         targetPosition = (playerTransform.position - transform.position).normalized * desiredFightingDistance + transform.position;
                     }
-                    navMeshAgent.SetDestination(targetPosition); //Could add: strafing left/right of this point, could add corner prediction to avoid LOS'ing too easily. 
+                    navMeshAgent.SetDestination(targetPosition);
 
                     //Shooting at player:
                     if (reloadTimer > reloadTime)
@@ -274,6 +287,7 @@ public class EnemyController : MonoBehaviour
 
     IEnumerator DeathSequence()
     {
+
         GetComponent<CapsuleCollider>().material = physMaterialOnDeath;
 
         viewMeshRenderer.material.SetColor("_Color", deathFOVColor);
@@ -283,7 +297,6 @@ public class EnemyController : MonoBehaviour
 
         float maxAngle = fieldOfView.viewAngle + (fieldOfView.viewAngle * 0.1f);
         float maxDist = fieldOfView.viewRadius + (fieldOfView.viewRadius * 0.1f);
-
 
         while (!hasFadedFOV)
         {
@@ -339,28 +352,62 @@ public class EnemyController : MonoBehaviour
     }
 
 
-    public void TurnOnRagdoll()
+    public void TurnOnRagdoll(Vector3 force, Vector3 impactPoint, Rigidbody spearRb)
     {
-        GetComponent<Collider>().enabled = false;
-        //TODO: Turn off animator.
-
+        Collider closestCollider = null; //Ensures something is assigned to closestCollider.
+        float smallestDistance = Mathf.Infinity;
 
         foreach (Collider coll in ragdollParts)
         {
+            Rigidbody rigidbody = coll.GetComponent<Rigidbody>();
+            rigidbody.useGravity = true;
+            rigidbody.isKinematic = false;
+            coll.isTrigger = false;
+            float distance = Vector3.Distance(coll.transform.position, impactPoint);
+            if (distance < smallestDistance)
+            {
+                closestCollider = coll;
+                smallestDistance = distance;
+            }
+        }
+
+        if (closestCollider == null)
+        {
+            Debug.LogError("No collider found in TurnOnRagdoll().");
+            return;
+        }
+        Debug.DrawRay(closestCollider.transform.position, closestCollider.attachedRigidbody.velocity, Color.magenta, 5f);
+        FixedJoint joint = closestCollider.gameObject.AddComponent<FixedJoint>();
+        joint.connectedBody = spearRb;
+
+        animator.enabled = false;
+    }
+    public void TurnOnRagdoll()
+    {
+        foreach (Collider coll in ragdollParts)
+        {
+            Rigidbody rigidbody = coll.GetComponent<Rigidbody>();
+            rigidbody.useGravity = true;
+            rigidbody.isKinematic = false;
             coll.isTrigger = false;
         }
+        animator.enabled = false;
+        GetComponent<Collider>().enabled = false;
     }
 
     private void SetRagdollParts()
     {
-        Collider[] colliders = GetComponentsInChildren<Collider>();
-
+        Collider[] colliders = gameObject.GetComponentsInChildren<Collider>();
+        Debug.Log("Amount of colliders in children: " + colliders.Length);
 
         foreach (Collider coll in colliders)
         {
             if (coll.gameObject != this.gameObject)
             {
                 coll.isTrigger = true;
+                Rigidbody collRb = coll.GetComponent<Rigidbody>();
+                collRb.useGravity = false;
+                collRb.isKinematic = true;
                 ragdollParts.Add(coll);
             }
         }

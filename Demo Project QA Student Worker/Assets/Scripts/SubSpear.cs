@@ -14,6 +14,7 @@ public class SubSpear : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
+        
         parentSpear.OnSubSpearCollision(this, other);
 
         Debug.Log(other.gameObject.name + " Collided with this on subspear!");

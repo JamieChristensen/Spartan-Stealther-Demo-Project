@@ -25,11 +25,9 @@ public class Bullet : MonoBehaviour
             EnemyController controller = other.transform.GetComponent<EnemyController>();
             controller.isDead = true;
             controller.navMeshAgent.isStopped = true;
+            controller.TurnOnRagdoll();
 
             other.transform.tag = "DeadEnemy";
-            
-            Rigidbody rb = other.transform.gameObject.AddComponent<Rigidbody>();
-            rb.AddExplosionForce(10f, transform.position, 2f, 0.1f, ForceMode.Impulse);
         }
 
         Destroy(particleTransform.gameObject, 5f); //Let particles fully dissolve before removing the obj.

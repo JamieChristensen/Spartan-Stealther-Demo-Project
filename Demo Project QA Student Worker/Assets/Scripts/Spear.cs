@@ -26,6 +26,7 @@ public class Spear : MonoBehaviour
     [SerializeField]
     private GameObject impactParticles, impactBloodParticles; //Assign in inspector.
 
+    private List<Transform> impaledEnemies = new List<Transform>();
 
     void Start()
     {
@@ -60,37 +61,14 @@ public class Spear : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
+        Debug.Log(other.gameObject.tag + " <- Spear collided with that!" + "\n" + "name of obj is: " + other.gameObject.name
+        + "\n" + "my layer was: " + LayerMask.LayerToName(gameObject.layer) +
+        "\n" + "others layer was: " + LayerMask.LayerToName(other.gameObject.layer));
+
         if (telegraphingSpear != null)
         {
             telegraphingSpear.SetActive(false);
         }
-
-        if (other.transform.CompareTag("Wall"))
-        {
-            Destroy(Instantiate(impactParticles, other.GetContact(0).point, Quaternion.identity), 5);
-
-            rb.velocity = Vector3.zero;
-
-            rb.constraints = RigidbodyConstraints.FreezeAll;
-            transform.position = previousPosition;
-            transform.rotation = previousRotation;
-
-            GetComponent<Collider>().enabled = false;
-            // Destroy(rb);
-
-            foreach (Transform child in transform.GetComponentsInChildren<Transform>())
-            {
-                child.gameObject.layer = LayerMask.NameToLayer("DeadEnemy");
-                child.gameObject.tag = "DeadEnemy";
-            }
-
-            if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
-            {
-                playerController.mostRecentlyThrownSpear = null;
-            }
-            this.enabled = false;
-        }
-
         if (other.transform.CompareTag("DeadEnemy"))
         {
             if (!hitEnemy)
@@ -112,7 +90,43 @@ public class Spear : MonoBehaviour
                 }
             }
             hitEnemy = true;
+
+            GetComponent<Collider>().isTrigger = true;
         }
+
+        if (other.transform.CompareTag("Wall"))
+        {
+            Destroy(Instantiate(impactParticles, other.GetContact(0).point, Quaternion.identity), 5);
+            Debug.Log("Spear made particles");
+
+            rb.velocity = Vector3.zero;
+
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+            transform.position = previousPosition;
+            transform.rotation = previousRotation;
+
+            // Destroy(rb);
+
+            foreach (Transform trans in impaledEnemies)
+            {
+                foreach (Transform child in trans.GetComponentsInChildren<Transform>())
+                {
+                    child.gameObject.layer = LayerMask.NameToLayer("DeadEnemy");
+                    child.gameObject.tag = "DeadEnemy";
+                }
+                trans.gameObject.layer = LayerMask.NameToLayer("DeadEnemy");
+                trans.gameObject.tag = "DeadEnemy";
+
+            }
+            gameObject.layer = LayerMask.NameToLayer("Spear");
+
+            if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
+            {
+                playerController.mostRecentlyThrownSpear = null;
+            }
+            transform.DetachChildren();
+        }
+
 
         if (other.transform.CompareTag("Enemy"))
         {
@@ -122,11 +136,14 @@ public class Spear : MonoBehaviour
                 EnemyController controller = other.transform.GetComponent<EnemyController>();
 
                 controller.OnSpearHit();
+                controller.TurnOnRagdoll(previousVelocity, other.GetContact(0).point, rb);
+                Debug.DrawRay(transform.position, rb.velocity, Color.red, 5f);
+                Debug.DrawRay(transform.position, previousVelocity, Color.green, 5f);
 
                 other.transform.tag = "ImpaledEnemy";
                 other.transform.gameObject.layer = LayerMask.NameToLayer("ImpaledEnemy");
                 other.transform.parent = transform;
-
+                impaledEnemies.Add(other.transform);
 
                 rb.velocity = previousVelocity;
                 if (subSpears[activatedSubSpears] != null)
@@ -144,6 +161,7 @@ public class Spear : MonoBehaviour
         }
 
 
+
     }
 
     public void OnSubSpearCollision(SubSpear subSpear, Collision other)
@@ -153,40 +171,6 @@ public class Spear : MonoBehaviour
         if (telegraphingSpear != null)
         {
             telegraphingSpear.SetActive(false);
-        }
-
-        if (other.transform.CompareTag("Wall"))
-        {
-            Destroy(Instantiate(impactParticles, other.GetContact(0).point, Quaternion.identity), 5);
-
-            rb.velocity = Vector3.zero;
-
-            rb.constraints = RigidbodyConstraints.FreezeAll;
-            transform.position = previousPosition;
-            transform.rotation = previousRotation;
-
-            GetComponent<Collider>().enabled = false;
-
-            if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
-            {
-                playerController.mostRecentlyThrownSpear = null;
-            }
-
-            foreach (SubSpear sSpear in subSpears)
-            {
-                sSpear.gameObject.SetActive(false);
-            }
-            foreach (Transform child in transform.GetComponentsInChildren<Transform>())
-            {
-                child.gameObject.layer = LayerMask.NameToLayer("DeadEnemy");
-                child.gameObject.tag = "DeadEnemy";
-            }
-
-            if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
-            {
-                playerController.mostRecentlyThrownSpear = null;
-            }
-            this.enabled = false;
         }
 
         if (other.transform.CompareTag("DeadEnemy"))
@@ -208,8 +192,53 @@ public class Spear : MonoBehaviour
                     playerController.mostRecentlyThrownSpear = null;
                 }
             }
-            hitEnemy = true;
+            subSpear.hitEnemy = true;
         }
+        if (other.transform.CompareTag("Wall"))
+        {
+            Destroy(Instantiate(impactParticles, other.GetContact(0).point, Quaternion.identity), 5);
+            Debug.Log("Subspear made particles");
+
+            rb.velocity = Vector3.zero;
+
+            rb.constraints = RigidbodyConstraints.FreezeAll;
+            transform.position = previousPosition;
+            transform.rotation = previousRotation;
+
+            subSpear.GetComponent<Collider>().enabled = false;
+
+            if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
+            {
+                playerController.mostRecentlyThrownSpear = null;
+            }
+
+            foreach (SubSpear sSpear in subSpears)
+            {
+                sSpear.gameObject.SetActive(false);
+            }
+            foreach (Transform trans in impaledEnemies)
+            {
+                foreach (Transform child in trans.GetComponentsInChildren<Transform>())
+                {
+                    if (child.gameObject.layer == LayerMask.NameToLayer("ImpaledEnemy"))
+                    {
+                        child.gameObject.layer = LayerMask.NameToLayer("DeadEnemy");
+                        child.gameObject.tag = "DeadEnemy";
+                    }
+                }
+                trans.gameObject.layer = LayerMask.NameToLayer("DeadEnemy");
+                trans.gameObject.tag = "DeadEnemy";
+            }
+
+            if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
+            {
+                playerController.mostRecentlyThrownSpear = null;
+            }
+            subSpear.enabled = false;
+            subSpear.GetComponent<Collider>().isTrigger = true;
+            transform.DetachChildren();
+        }
+
         if (other.transform.CompareTag("Enemy"))
         {
             if (subSpear.hitEnemy == false)
@@ -218,10 +247,14 @@ public class Spear : MonoBehaviour
                 EnemyController controller = other.transform.GetComponent<EnemyController>();
 
                 controller.OnSpearHit();
+                controller.TurnOnRagdoll(previousVelocity, other.GetContact(0).point, subSpear.rb);
+                Debug.DrawRay(transform.position, rb.velocity, Color.red, 5f);
+                Debug.DrawRay(transform.position, previousVelocity, Color.green, 5f);
 
                 other.transform.tag = "ImpaledEnemy";
                 other.transform.gameObject.layer = LayerMask.NameToLayer("ImpaledEnemy");
                 other.transform.parent = transform;
+                impaledEnemies.Add(other.transform);
                 hitEnemy = true;
                 //rb.useGravity = true;
                 rb.velocity = previousVelocity;

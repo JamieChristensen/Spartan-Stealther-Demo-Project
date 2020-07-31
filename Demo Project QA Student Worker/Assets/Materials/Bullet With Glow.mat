@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SpearGold
+  m_Name: Bullet With Glow
   m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
   m_ShaderKeywords: _EMISSION _LIGHTMAPPING_DYNAMIC_LIGHTMAPS _LIGHTMAPPING_REALTIME
     _UVSEC_UV1
@@ -70,19 +70,23 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _EmissionScaleUI: 0.84
-    - _Glossiness: 0.72
+    - _EmissionScaleUI: 0
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
     - _Lightmapping: 1
-    - _Metallic: 1
+    - _Metallic: 0.3
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.74264705, g: 0.60340077, b: 0.18566176, a: 1}
-    - _EmissionColor: {r: 0.18529409, g: 0.16740362, b: 0.092647046, a: 0.84}
-    - _EmissionColorUI: {r: 0.2205882, g: 0.19929004, b: 0.1102941, a: 1}
+    - _Color: {r: 0.5377358, g: 0.08492234, b: 0.027901389, a: 1}
+    - _EmissionColor: {r: 3.8289042, g: 0, b: 0.032210123, a: 0}
+    - _EmissionColorUI: {r: 0, g: 0, b: 0, a: 1}
     - _EmissionColorWithMapUI: {r: 1, g: 1, b: 1, a: 1}
     - _SpecularColor: {r: 0.8088235, g: 0.6295969, b: 0.3033088, a: 1}

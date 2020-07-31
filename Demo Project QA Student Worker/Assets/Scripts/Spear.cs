@@ -75,19 +75,20 @@ public class Spear : MonoBehaviour
             transform.position = previousPosition;
             transform.rotation = previousRotation;
 
-            this.enabled = false;
             GetComponent<Collider>().enabled = false;
-            Destroy(rb);
+            // Destroy(rb);
 
             foreach (Transform child in transform.GetComponentsInChildren<Transform>())
             {
                 child.gameObject.layer = LayerMask.NameToLayer("DeadEnemy");
+                child.gameObject.tag = "DeadEnemy";
             }
 
             if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
             {
                 playerController.mostRecentlyThrownSpear = null;
             }
+            this.enabled = false;
         }
 
         if (other.transform.CompareTag("DeadEnemy"))
@@ -120,12 +121,9 @@ public class Spear : MonoBehaviour
                 Destroy(Instantiate(impactBloodParticles, other.GetContact(0).point, Quaternion.identity, other.transform), 5);
                 EnemyController controller = other.transform.GetComponent<EnemyController>();
 
-                controller.isDead = true;
-                if (controller.navMeshAgent.enabled)
-                {
-                    controller.navMeshAgent.isStopped = true;
-                }
-                other.transform.tag = "DeadEnemy";
+                controller.OnSpearHit();
+
+                other.transform.tag = "ImpaledEnemy";
                 other.transform.gameObject.layer = LayerMask.NameToLayer("ImpaledEnemy");
                 other.transform.parent = transform;
 
@@ -136,6 +134,7 @@ public class Spear : MonoBehaviour
                     subSpears[activatedSubSpears].gameObject.SetActive(true);
                     activatedSubSpears++;
                 }
+                GetComponent<Collider>().isTrigger = true;
             }
 
             if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
@@ -165,12 +164,8 @@ public class Spear : MonoBehaviour
             rb.constraints = RigidbodyConstraints.FreezeAll;
             transform.position = previousPosition;
             transform.rotation = previousRotation;
-            //Debug.Log("Hit a wall");
 
-            this.enabled = false;
             GetComponent<Collider>().enabled = false;
-
-            Destroy(rb);
 
             if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
             {
@@ -184,12 +179,14 @@ public class Spear : MonoBehaviour
             foreach (Transform child in transform.GetComponentsInChildren<Transform>())
             {
                 child.gameObject.layer = LayerMask.NameToLayer("DeadEnemy");
+                child.gameObject.tag = "DeadEnemy";
             }
 
             if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
             {
                 playerController.mostRecentlyThrownSpear = null;
             }
+            this.enabled = false;
         }
 
         if (other.transform.CompareTag("DeadEnemy"))
@@ -220,22 +217,22 @@ public class Spear : MonoBehaviour
                 Destroy(Instantiate(impactBloodParticles, other.GetContact(0).point, Quaternion.identity, other.transform), 5);
                 EnemyController controller = other.transform.GetComponent<EnemyController>();
 
-                controller.isDead = true;
-                if (controller.navMeshAgent.enabled)
-                {
-                    controller.navMeshAgent.isStopped = true;
-                }
-                other.transform.tag = "DeadEnemy";
+                controller.OnSpearHit();
+
+                other.transform.tag = "ImpaledEnemy";
                 other.transform.gameObject.layer = LayerMask.NameToLayer("ImpaledEnemy");
                 other.transform.parent = transform;
                 hitEnemy = true;
                 //rb.useGravity = true;
                 rb.velocity = previousVelocity;
+
+
                 if (activatedSubSpears < subSpears.Length)
                 {
                     subSpears[activatedSubSpears].gameObject.SetActive(true);
                     activatedSubSpears++;
                 }
+                subSpear.GetComponent<Collider>().isTrigger = true;
             }
 
             if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.

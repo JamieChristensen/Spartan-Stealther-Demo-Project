@@ -17,8 +17,9 @@ public class SubSpear : MonoBehaviour
         parentSpear.OnSubSpearCollision(this, other);
 
         Debug.Log(other.gameObject.name + " Collided with this on subspear!");
-        rb.velocity = Vector3.zero;
-        Destroy(rb);
-        Destroy(GetComponent<BoxCollider>());
+        //rb.velocity = Vector3.zero;
+        //Destroy(rb);
+        //Destroy(GetComponent<BoxCollider>());
+        GetComponent<BoxCollider>().isTrigger = true;
     }
 }

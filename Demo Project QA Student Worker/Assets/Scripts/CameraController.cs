@@ -16,6 +16,7 @@ public class CameraController : MonoBehaviour
 
     private void Start()
     {
+        Time.fixedDeltaTime = 0.01f; // Double.
         if (player == null)
         {
             player = FindObjectOfType<PlayerController>();

@@ -124,7 +124,7 @@ public class EnemyController : MonoBehaviour
         else
         {
             state = EnemyState.Patrolling;
-        }   
+        }
 
         SetRagdollParts();
     }
@@ -149,6 +149,7 @@ public class EnemyController : MonoBehaviour
         if (isDead && state != EnemyState.Dead)
         {
             StartCoroutine(DeathSequence());
+            state = EnemyState.Dead;
         }
 
         if (reloadTimer < reloadTime)
@@ -265,16 +266,20 @@ public class EnemyController : MonoBehaviour
         return false;
     }
 
+    public void OnSpearHit()
+    {
+        isDead = true;
+        navMeshAgent.enabled = false;
+    }
+
     IEnumerator DeathSequence()
     {
         GetComponent<CapsuleCollider>().material = physMaterialOnDeath;
-        state = EnemyState.Dead;
-        navMeshAgent.enabled = false;
+
         viewMeshRenderer.material.SetColor("_Color", deathFOVColor);
 
         bool hasFadedFOV = false;
         float fovFadeTimer = 0f;
-
 
         float maxAngle = fieldOfView.viewAngle + (fieldOfView.viewAngle * 0.1f);
         float maxDist = fieldOfView.viewRadius + (fieldOfView.viewRadius * 0.1f);
@@ -293,7 +298,6 @@ public class EnemyController : MonoBehaviour
             fovFadeTimer += Time.deltaTime;
             yield return new WaitForSeconds(0f);
         }
-        yield return null;
     }
 
     private void FireBullet(Vector3 spawnPosition, Vector3 targetPosition, float bulletSpeed)

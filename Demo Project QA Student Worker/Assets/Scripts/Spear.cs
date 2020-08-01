@@ -28,10 +28,18 @@ public class Spear : MonoBehaviour
 
     private List<Transform> impaledEnemies = new List<Transform>();
 
+    [Header("Sounds:")]
+    [SerializeField]
+    private SoundPlayer spearHitWallSoundPlayer;
+    [SerializeField]
+    private SoundPlayer spearHitEnemySoundPlayer;
+
     void Start()
     {
         previousPosition = transform.position;
         previousRotation = transform.rotation;
+
+
 
     }
 
@@ -80,7 +88,7 @@ public class Spear : MonoBehaviour
                 transform.position = previousPosition;
                 transform.rotation = previousRotation;
 
-                transform.parent = other.transform;
+     
 
                 rb.isKinematic = true;
 
@@ -88,6 +96,7 @@ public class Spear : MonoBehaviour
                 {
                     playerController.mostRecentlyThrownSpear = null;
                 }
+                spearHitEnemySoundPlayer.PlaySound();
             }
             hitEnemy = true;
 
@@ -125,6 +134,7 @@ public class Spear : MonoBehaviour
                 playerController.mostRecentlyThrownSpear = null;
             }
             transform.DetachChildren();
+            spearHitWallSoundPlayer.PlaySound();
         }
 
 
@@ -152,6 +162,7 @@ public class Spear : MonoBehaviour
                     activatedSubSpears++;
                 }
                 GetComponent<Collider>().isTrigger = true;
+                spearHitEnemySoundPlayer.PlaySound();
             }
 
             if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
@@ -185,14 +196,13 @@ public class Spear : MonoBehaviour
                 transform.position = previousPosition;
                 transform.rotation = previousRotation;
 
-                transform.parent = other.transform;
-
                 if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
                 {
                     playerController.mostRecentlyThrownSpear = null;
                 }
             }
             subSpear.hitEnemy = true;
+            spearHitEnemySoundPlayer.PlaySound();
         }
         if (other.transform.CompareTag("Wall"))
         {
@@ -228,6 +238,7 @@ public class Spear : MonoBehaviour
                 }
                 trans.gameObject.layer = LayerMask.NameToLayer("DeadEnemy");
                 trans.gameObject.tag = "DeadEnemy";
+
             }
 
             if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
@@ -237,6 +248,7 @@ public class Spear : MonoBehaviour
             subSpear.enabled = false;
             subSpear.GetComponent<Collider>().isTrigger = true;
             transform.DetachChildren();
+            spearHitWallSoundPlayer.PlaySound();
         }
 
         if (other.transform.CompareTag("Enemy"))
@@ -266,6 +278,7 @@ public class Spear : MonoBehaviour
                     activatedSubSpears++;
                 }
                 subSpear.GetComponent<Collider>().isTrigger = true;
+                spearHitEnemySoundPlayer.PlaySound();
             }
 
             if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.

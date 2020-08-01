@@ -8,8 +8,8 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField]
     private CharacterController controller;     //Assign in inspector
-    
-    public Rigidbody rb;   //Assign in inspector
+
+    public Rigidbody rb;    //Assign in inspector
 
     [SerializeField]
     private Camera cam;     //Assign in inspector
@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
 
     private float rayMaxDist = 500f;
 
+    private bool isDead;
 
     [Header("Spear")]
     [SerializeField]
@@ -47,12 +48,19 @@ public class PlayerController : MonoBehaviour
     private bool readyToShoot;
 
     [HideInInspector]
-    public Spear mostRecentlyThrownSpear; //Names are hard. - public so spear can un-recent itself when colliding with walls/enemies.
+    public Spear mostRecentlyThrownSpear;   //Names are hard. - public so spear can un-recent itself when colliding with walls/enemies.
     private bool isRedirectingSpear;
     private bool doRedirectSpear;
 
-    public Vector3 mousePos; //Used by camera
+    public Vector3 mousePos;    //Used by camera
 
+    [Header("Sound effects")]
+    [SerializeField]
+    private SoundPlayer deathSoundPlayer;
+    [SerializeField]
+    private SoundPlayer spearThrowSoundPlayer;
+    [SerializeField]
+    private SoundPlayer spearRedirectSoundPlayer;
     private void Awake()
     {
 
@@ -122,7 +130,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            Time.timeScale = 1f;   
+            Time.timeScale = 1f;
         }
 
         //Timers:
@@ -172,6 +180,8 @@ public class PlayerController : MonoBehaviour
                 doRedirectSpear = false;
                 isRedirectingSpear = false;
                 mostRecentlyThrownSpear.telegraphingSpear.SetActive(false);
+
+                spearRedirectSoundPlayer.PlaySound();
             }
         }
 
@@ -181,13 +191,14 @@ public class PlayerController : MonoBehaviour
 
     private void ThrowSpear(Vector3 target, float spearSpeed)
     {
+        spearThrowSoundPlayer.PlaySound();
+
         spearInHand.SetActive(false);
         GameObject spearObj = Instantiate(spearPrefab, spearInHand.transform.position, spearInHand.transform.rotation);
         Spear spear = spearObj.GetComponentInChildren<Spear>();
         target = new Vector3(target.x, spearInHand.transform.position.y, target.z);
-        Vector3 upModifier = new Vector3(0,0.15f, 0); //Just to give some upwards lift on collisions.
 
-        spear.rb.AddForce((target + upModifier - spearInHand.transform.position).normalized * spearSpeed, ForceMode.VelocityChange);
+        spear.rb.AddForce((target - spearInHand.transform.position).normalized * spearSpeed, ForceMode.VelocityChange);
 
         mostRecentlyThrownSpear = spear;
         spear.playerController = this;
@@ -212,7 +223,16 @@ public class PlayerController : MonoBehaviour
 
     public IEnumerator OnDeath()
     {
-        yield return new WaitForSeconds(2f);
+        if (isDead)
+        {
+            yield break;
+        }
+        else
+        {
+            isDead = true;
+        }
+        deathSoundPlayer.PlaySound();
+        yield return new WaitForSeconds(deathSoundPlayer.audioSource.clip.length - 1f);
         SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
     }
 }

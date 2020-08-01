@@ -67,6 +67,8 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private float reloadTime = 0.8f;
     private float reloadTimer;
+    [SerializeField]
+    private GameObject muzzleFlashParticles;
 
     Vector3 targetPosition;
 
@@ -96,6 +98,12 @@ public class EnemyController : MonoBehaviour
     private EnemyBubble enemyBubble;
     [SerializeField]
     private float bubbleDuration = 1f;
+
+    [Header("Sounds:")]
+    [SerializeField]
+    private SoundPlayer gunshotSoundPlayer;
+    [SerializeField]
+    private SoundPlayer deathSoundPlayer, alertSoundPlayer;
 
     void OnDrawGizmosSelected()
     {
@@ -190,6 +198,7 @@ public class EnemyController : MonoBehaviour
                 if (IsTransformInFOV(playerTransform, fieldOfView))
                 {
                     state = EnemyState.FightingPlayer;
+                    alertSoundPlayer.PlaySound(0.2f, 0);
                     enemyBubble.ActivateBubble(EnemyState.FightingPlayer, bubbleDuration);
                     reloadTimer = 0; //So the enemy doesn't shoot immediately when seeing the player.
                     lastKnownPlayerPosition = playerTransform.position;
@@ -262,7 +271,7 @@ public class EnemyController : MonoBehaviour
                     //Shooting at player:
                     if (reloadTimer > reloadTime)
                     {
-                        FireBullet(bulletSpawn.position, playerTransform.position, projectileSpeed);
+                        FireBullet(bulletSpawn, playerTransform.position, projectileSpeed);
                         reloadTimer = 0;
                     }
                 }
@@ -287,7 +296,7 @@ public class EnemyController : MonoBehaviour
 
     IEnumerator DeathSequence()
     {
-
+        deathSoundPlayer.PlaySound();
         GetComponent<CapsuleCollider>().material = physMaterialOnDeath;
 
         viewMeshRenderer.material.SetColor("_Color", deathFOVColor);
@@ -313,16 +322,22 @@ public class EnemyController : MonoBehaviour
         }
     }
 
-    private void FireBullet(Vector3 spawnPosition, Vector3 targetPosition, float bulletSpeed)
+
+    private void FireBullet(Transform spawnPosition, Vector3 targetPosition, float bulletSpeed)
     {
-        GameObject bulletObj = Instantiate(bulletPrefab, spawnPosition, Quaternion.identity);
+        gunshotSoundPlayer.PlaySound();
+
+        GameObject bulletObj = Instantiate(bulletPrefab, spawnPosition.position, Quaternion.identity);
         bulletObj.transform.LookAt(targetPosition, Vector3.up);
         Rigidbody rb = bulletObj.GetComponent<Rigidbody>();
 
-        Vector3 direction = (targetPosition - spawnPosition).normalized;
+        Vector3 direction = (targetPosition - spawnPosition.position).normalized;
 
         rb.AddForce(direction * bulletSpeed, ForceMode.VelocityChange);
         rb.AddRelativeTorque(transform.forward * 45, ForceMode.VelocityChange);
+
+        //"muzzle-flash"-Particles:
+        GameObject particles = Instantiate(muzzleFlashParticles, spawnPosition.position,spawnPosition.rotation);
     }
 
     private int NextPointOnPathIndex(int currentIndex)

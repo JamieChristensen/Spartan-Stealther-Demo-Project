@@ -19,6 +19,7 @@ public class EndScene : MonoBehaviour
         "\n" + "# of spears thrown: " + gameStats.spearsThrown +
         "\n" + "# of spear-redirects: " + gameStats.spearRedirects + 
         "\n" + "You can press T to go back to the first scene if you wish to. (Won't reset these stats)" + 
+        "\n" + "Press esc to close game." +
         "\n" + "- Jamie";
 
         text.text = str;

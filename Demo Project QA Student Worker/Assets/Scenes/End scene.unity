@@ -133,6 +133,11 @@ PrefabInstance:
       propertyPath: isEndScene
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1293367098172425028, guid: 7e85d2f197b5fd34ab49921779170d97,
+        type: 3}
+      propertyPath: closeGameKey
+      value: 27
+      objectReference: {fileID: 0}
     - target: {fileID: 2660151676906287351, guid: 7e85d2f197b5fd34ab49921779170d97,
         type: 3}
       propertyPath: m_Name

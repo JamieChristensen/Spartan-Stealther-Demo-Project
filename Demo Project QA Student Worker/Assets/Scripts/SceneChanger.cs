@@ -6,7 +6,7 @@ using TMPro;
 
 public class SceneChanger : MonoBehaviour
 {
-    public KeyCode ReloadSceneKey, LoadNextLevelKey;
+    public KeyCode ReloadSceneKey, LoadNextLevelKey, closeGameKey;
 
     [Header("Kind-of a game manager now.. :')")]
 
@@ -65,9 +65,13 @@ public class SceneChanger : MonoBehaviour
         {
             SceneManager.LoadScene((SceneManager.GetActiveScene().buildIndex + 1) % (SceneManager.sceneCountInBuildSettings));
         }
+        if (Input.GetKeyDown(closeGameKey))
+        {
+            Application.Quit();
+        }
 
 
-        
+
 
 
 
@@ -93,7 +97,8 @@ public class SceneChanger : MonoBehaviour
 
     IEnumerator LoadNextScene()
     {
-        if (isLoadingScene == true){
+        if (isLoadingScene == true)
+        {
             yield break;
         }
         isLoadingScene = true;

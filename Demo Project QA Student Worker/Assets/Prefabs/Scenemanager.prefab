@@ -46,11 +46,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ReloadSceneKey: 114
   LoadNextLevelKey: 116
+  closeGameKey: 27
   amountOfEnemiesInScene: {fileID: 11400000, guid: 4032db71ae5dc8b46985c716577c30b2,
     type: 2}
   text: {fileID: 0}
   waitBeforeLoad: 5
   soundPlayer: {fileID: 3087893599666635223}
+  isEndScene: 0
 --- !u!1001 &2452476008008966458
 PrefabInstance:
   m_ObjectHideFlags: 0

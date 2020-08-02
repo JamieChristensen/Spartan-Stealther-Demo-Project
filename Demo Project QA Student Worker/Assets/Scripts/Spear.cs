@@ -34,13 +34,14 @@ public class Spear : MonoBehaviour
     [SerializeField]
     private SoundPlayer spearHitEnemySoundPlayer;
 
+    public Transform[] childrenOnStart; //Used by "raiseEventOnCollision" for 
+
     void Start()
     {
         previousPosition = transform.position;
         previousRotation = transform.rotation;
 
-
-
+        childrenOnStart = transform.GetComponentsInChildren<Transform>();
     }
 
     void Update()
@@ -87,7 +88,7 @@ public class Spear : MonoBehaviour
 
      
 
-                rb.isKinematic = true;
+                //rb.isKinematic = true;
 
                 if (playerController.mostRecentlyThrownSpear == this) //To be sure a spear doesn't unspear some other spear.
                 {

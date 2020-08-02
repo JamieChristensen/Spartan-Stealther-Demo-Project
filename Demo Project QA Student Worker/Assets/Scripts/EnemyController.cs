@@ -96,7 +96,7 @@ public class EnemyController : MonoBehaviour
 
     [Header("Ragdoll and animations")]
     [SerializeField]
-    private List<Collider> ragdollParts = new List<Collider>();
+    public List<Collider> ragdollParts = new List<Collider>();
 
     [SerializeField]
     private Animator animator; //model animator.

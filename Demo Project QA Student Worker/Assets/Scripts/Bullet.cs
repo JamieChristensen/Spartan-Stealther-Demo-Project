@@ -7,8 +7,6 @@ public class Bullet : MonoBehaviour
     [SerializeField]
     private GameObject particleExplosionPrefab;
 
-    [SerializeField]
-    private SoundPlayer impactSound;
 
     private void OnCollisionEnter(Collision other)
     {
@@ -32,10 +30,6 @@ public class Bullet : MonoBehaviour
 
             other.transform.tag = "DeadEnemy";
         }
-        
-        impactSound.transform.parent = null;
-        impactSound.PlaySound();
-        Destroy(impactSound.gameObject, impactSound.audioSource.clip.length);
 
         Destroy(particleTransform.gameObject, 5f); //Let particles fully dissolve before removing the obj.
         Destroy(this.gameObject);

@@ -274,7 +274,7 @@ public class PlayerController : MonoBehaviour
             gameStats.deaths++;
         }
         deathSoundPlayer.PlaySound();
-        yield return new WaitForSeconds(deathSoundPlayer.audioSource.clip.length - 1f);
+        yield return new WaitForSecondsRealtime(deathSoundPlayer.audioSource.clip.length - 1f);
         SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex, LoadSceneMode.Single);
     }
 }

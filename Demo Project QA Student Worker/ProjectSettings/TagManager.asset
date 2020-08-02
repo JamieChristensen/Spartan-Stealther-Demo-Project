@@ -9,6 +9,7 @@ TagManager:
   - DeadEnemy
   - Ground
   - ImpaledEnemy
+  - Spear
   layers:
   - Default
   - TransparentFX

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using STL2.Events;
 
 [RequireComponent(typeof(NavMeshAgent))]
 public class EnemyController : MonoBehaviour
@@ -15,6 +16,14 @@ public class EnemyController : MonoBehaviour
     [SerializeField]
     private Transform playerTransform; //Assign in inspector.
 
+    [SerializeField]
+    private GameStats gameStats;
+
+    [SerializeField]
+    private IntVariable enemiesInScene;
+
+    [SerializeField]
+    private VoidEvent eventOnDeath;
 
     [Header("Patrol-settings:")]
     [Tooltip("If true, the path will loop around to the start. If false, the agent will reverse direction at end of path.")]
@@ -41,8 +50,6 @@ public class EnemyController : MonoBehaviour
     [Header("FOV related:")]
     [SerializeField]
     private float deathFadeFOVTime;
-    [SerializeField]
-    private float deathFadeShaderTime;
 
     [SerializeField]
     private FieldOfView fieldOfView; //Assign in inspector
@@ -122,7 +129,7 @@ public class EnemyController : MonoBehaviour
                 Gizmos.DrawSphere(patrolPoints[i], 0.5f);
             }
         }
-        Gizmos.DrawCube(targetPosition, new Vector3(0.8f, 0.8f, 0.8f)); 
+        Gizmos.DrawCube(targetPosition, new Vector3(0.8f, 0.8f, 0.8f));
     }
 
     void Awake()
@@ -159,6 +166,8 @@ public class EnemyController : MonoBehaviour
             navMeshAgent.SetDestination(patrolPoints[currentPatrolPointIndex]);
         }
         fieldOfView.viewRadius = viewRange;
+
+        enemiesInScene.amount++;
     }
 
     // Update is called once per frame
@@ -297,6 +306,13 @@ public class EnemyController : MonoBehaviour
     IEnumerator DeathSequence()
     {
         deathSoundPlayer.PlaySound();
+        if (eventOnDeath != null)
+        {
+            eventOnDeath.Raise();
+        }
+        gameStats.kills++;
+        enemiesInScene.amount--;
+
         GetComponent<CapsuleCollider>().material = physMaterialOnDeath;
 
         viewMeshRenderer.material.SetColor("_Color", deathFOVColor);
@@ -337,7 +353,7 @@ public class EnemyController : MonoBehaviour
         rb.AddRelativeTorque(transform.forward * 45, ForceMode.VelocityChange);
 
         //"muzzle-flash"-Particles:
-        GameObject particles = Instantiate(muzzleFlashParticles, spawnPosition.position,spawnPosition.rotation);
+        GameObject particles = Instantiate(muzzleFlashParticles, spawnPosition.position, spawnPosition.rotation);
     }
 
     private int NextPointOnPathIndex(int currentIndex)

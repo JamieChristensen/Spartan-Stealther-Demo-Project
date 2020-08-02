@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using STL2.Events;
 
 
 public class PlayerController : MonoBehaviour
@@ -14,9 +15,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Camera cam;     //Assign in inspector
 
-
-
     private float horizontalInput, verticalInput, shootInput;
+
     [SerializeField]
     private KeyCode bulletTimeKey, redirectSpearKey;
 
@@ -27,13 +27,18 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     private float moveSpeed;
+
     [Range(0, 20)]
     [SerializeField]
     private float controllerGravity;
-
     private float rayMaxDist = 500f;
-
     private bool isDead;
+
+    [SerializeField]
+    private Collider[] collidersToActivateOnDeath;
+
+    [SerializeField]
+    private GameStats gameStats;
 
     [Header("Spear")]
     [SerializeField]
@@ -51,7 +56,14 @@ public class PlayerController : MonoBehaviour
     public Spear mostRecentlyThrownSpear;   //Names are hard. - public so spear can un-recent itself when colliding with walls/enemies.
     private bool isRedirectingSpear;
     private bool doRedirectSpear;
+    [SerializeField]
+    private LineRenderer telegraphingLineRenderer;
+    [SerializeField]
+    private float maxDistanceTelegraph;
+    [SerializeField]
+    private LayerMask telegraphLayerMask;
 
+    [HideInInspector]
     public Vector3 mousePos;    //Used by camera
 
     [Header("Sound effects")]
@@ -61,9 +73,14 @@ public class PlayerController : MonoBehaviour
     private SoundPlayer spearThrowSoundPlayer;
     [SerializeField]
     private SoundPlayer spearRedirectSoundPlayer;
+
+
     private void Awake()
     {
-
+        if (cam == null)
+        {
+            cam = FindObjectOfType<Camera>();
+        }
     }
     private void Start()
     {
@@ -126,7 +143,7 @@ public class PlayerController : MonoBehaviour
         if (bulletTimeOn)
         {
             Time.timeScale = 0.33f;          //Half speed.
-            //FixedDeltaTime is changed to 0.02*0.33 in cameracontroller for lack of better place. No adjustment needed to suit timeScale w.r.t bullettime.
+            //Fixed delta-time is taken care of in CameraController.
         }
         else
         {
@@ -161,6 +178,19 @@ public class PlayerController : MonoBehaviour
             transform.LookAt(lookPos);
             transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z); //Prevents looking down.
 
+            Vector3 pos0 = telegraphingLineRenderer.transform.position;
+            RaycastHit hit2;
+            Vector3 pos1 = telegraphingLineRenderer.transform.position;
+            if (Physics.Raycast(telegraphingLineRenderer.transform.position, telegraphingLineRenderer.transform.up, out hit2, maxDistanceTelegraph, telegraphLayerMask))
+            {
+                pos1 = hit2.point;
+            }
+            else
+            {
+                pos1 = telegraphingLineRenderer.transform.position + (telegraphingLineRenderer.transform.up * maxDistanceTelegraph);
+            }
+            telegraphingLineRenderer.SetPositions(new Vector3[2] { pos0, pos1 });
+
             if (isRedirectingSpear && mostRecentlyThrownSpear != null)
             {
                 Transform spearTransform = mostRecentlyThrownSpear.telegraphingSpear.transform;
@@ -182,6 +212,7 @@ public class PlayerController : MonoBehaviour
                 mostRecentlyThrownSpear.telegraphingSpear.SetActive(false);
 
                 spearRedirectSoundPlayer.PlaySound();
+                gameStats.spearRedirects++;
             }
         }
 
@@ -202,6 +233,8 @@ public class PlayerController : MonoBehaviour
 
         mostRecentlyThrownSpear = spear;
         spear.playerController = this;
+
+        gameStats.spearsThrown++;
     }
 
     public void Die()
@@ -209,11 +242,19 @@ public class PlayerController : MonoBehaviour
         //Play some sound-effects
         //unparent all transforms/rigidbodies, free up all restrictions on them, apply a minor explosion-force centered a bit below the player.
 
-        controller.enabled = false;
+        foreach (Collider coll in collidersToActivateOnDeath)
+        {
+            coll.isTrigger = false;
+            coll.GetComponent<Rigidbody>().isKinematic = false;
+            telegraphingLineRenderer.gameObject.SetActive(false);
+        }
+        transform.DetachChildren();
+
         if (rb == null)
         {
             rb = GetComponent<Rigidbody>();
         }
+
         rb.constraints = RigidbodyConstraints.None;
         rb.useGravity = true;
 
@@ -230,6 +271,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             isDead = true;
+            gameStats.deaths++;
         }
         deathSoundPlayer.PlaySound();
         yield return new WaitForSeconds(deathSoundPlayer.audioSource.clip.length - 1f);

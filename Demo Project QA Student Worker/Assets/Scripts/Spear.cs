@@ -69,9 +69,6 @@ public class Spear : MonoBehaviour
 
     private void OnCollisionEnter(Collision other)
     {
-        Debug.Log(other.gameObject.tag + " <- Spear collided with that!" + "\n" + "name of obj is: " + other.gameObject.name
-        + "\n" + "my layer was: " + LayerMask.LayerToName(gameObject.layer) +
-        "\n" + "others layer was: " + LayerMask.LayerToName(other.gameObject.layer));
 
         if (telegraphingSpear != null)
         {
@@ -106,7 +103,7 @@ public class Spear : MonoBehaviour
         if (other.transform.CompareTag("Wall"))
         {
             Destroy(Instantiate(impactParticles, other.GetContact(0).point, Quaternion.identity), 5);
-            Debug.Log("Spear made particles");
+            
 
             rb.velocity = Vector3.zero;
 
@@ -207,7 +204,7 @@ public class Spear : MonoBehaviour
         if (other.transform.CompareTag("Wall"))
         {
             Destroy(Instantiate(impactParticles, other.GetContact(0).point, Quaternion.identity), 5);
-            Debug.Log("Subspear made particles");
+            
 
             rb.velocity = Vector3.zero;
 

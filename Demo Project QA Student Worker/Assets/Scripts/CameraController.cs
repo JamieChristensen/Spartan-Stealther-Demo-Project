@@ -17,9 +17,9 @@ public class CameraController : MonoBehaviour
     [SerializeField]
     private float mouseFactor;
 
-    private void Start()
+    private void Awake()
     {
-        Time.fixedDeltaTime = 0.02f * 0.33f;
+        Time.fixedDeltaTime = 0.02f*0.33f;
         if (player == null)
         {
             player = FindObjectOfType<PlayerController>();

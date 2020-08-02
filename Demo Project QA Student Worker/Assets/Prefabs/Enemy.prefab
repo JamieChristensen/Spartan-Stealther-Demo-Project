@@ -249,13 +249,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   navMeshAgent: {fileID: 1932664629118018422}
   playerTransform: {fileID: 0}
+  gameStats: {fileID: 11400000, guid: c3fe57854349c4344a8c3c3c3c130ccd, type: 2}
+  enemiesInScene: {fileID: 11400000, guid: 4032db71ae5dc8b46985c716577c30b2, type: 2}
+  eventOnDeath: {fileID: 0}
   isPathClosed: 0
   patrolPoints:
   - {x: -25, y: 0, z: 7}
   - {x: 3, y: 0, z: 7}
   isDead: 0
   deathFadeFOVTime: 0.5
-  deathFadeShaderTime: 0
   fieldOfView: {fileID: 2187661040673429585}
   viewMeshRenderer: {fileID: 1563246516938995849}
   deathFOVColor: {r: 0.20754719, g: 0, b: 0, a: 0.6156863}
@@ -263,7 +265,7 @@ MonoBehaviour:
   seekingFOVColor: {r: 1, g: 0.7263849, b: 0, a: 0.6156863}
   viewRange: 20
   desiredFightingDistance: 14
-  projectileSpeed: 25
+  projectileSpeed: 30
   bulletPrefab: {fileID: 5297487721701998543, guid: 49496801d3b7fb64499d0bf0abd5ca8e,
     type: 3}
   bulletSpawn: {fileID: 8277627816698653179}
@@ -271,8 +273,8 @@ MonoBehaviour:
   muzzleFlashParticles: {fileID: 705520177329233658, guid: 84ebfeedb3302e84fb3a13fd943d4ffb,
     type: 3}
   turnSmoothTime: 0.05
-  baseMoveSpeed: 6
-  fightingMoveSpeed: 8
+  baseMoveSpeed: 8
+  fightingMoveSpeed: 10
   baseTurnSpeed: 230
   fightingTurnSpeed: 270
   physMaterialOnDeath: {fileID: 13400000, guid: 0b26f9bc1cea8864eb597175be8c7dd8,
@@ -306,8 +308,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   visibleTargets: []
-  meshResolution: 10
-  edgeResolveIterations: 6
+  meshResolution: 5
+  edgeResolveIterations: 4
   edgeDstThreshold: 1
   viewMeshFilter: {fileID: 1357993306903616386}
 --- !u!195 &1932664629118018422
@@ -320,10 +322,10 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.42
-  m_Speed: 6
+  m_Speed: 8
   m_Acceleration: 8
   avoidancePriority: 50
-  m_AngularSpeed: 180
+  m_AngularSpeed: 230
   m_StoppingDistance: 0.5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1

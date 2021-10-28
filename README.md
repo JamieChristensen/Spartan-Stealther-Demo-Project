@@ -1,2 +1,2 @@
 # Spartan-Stealther-Demo
-A one-week project made for a job-interview over the summer of 2020. 
+A one-week game protope project. Proof of concept.
